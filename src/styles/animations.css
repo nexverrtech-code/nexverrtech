@@ -1,0 +1,116 @@
+/**
+ * Shared CSS-driven motion. Everything here animates transform/opacity only,
+ * so the compositor handles it without layout or paint work.
+ */
+
+/* Data point travelling along an SVG connection path. */
+@keyframes nx-dash-travel {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -240;
+  }
+}
+
+@keyframes nx-float-soft {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+@keyframes nx-orbit-fade {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes nx-scan {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+.nx-anim-float {
+  animation: nx-float-soft 7s ease-in-out infinite;
+}
+
+.nx-anim-orbit-fade {
+  animation: nx-orbit-fade 6s ease-in-out infinite;
+}
+
+.nx-anim-dash {
+  animation: nx-dash-travel 3.2s linear infinite;
+}
+
+/* Slow light sweep across the hero grid — one transform, no repaint. */
+.nx-anim-scan {
+  animation: nx-scan-v 9s ease-in-out infinite;
+}
+
+@keyframes nx-scan-v {
+  0% {
+    transform: translate3d(0, -60%, 0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.55;
+  }
+  60% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translate3d(0, 220%, 0);
+    opacity: 0;
+  }
+}
+
+/* Grid backdrop — a single repeating gradient rather than hundreds of nodes. */
+.nx-grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 200, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 200, 255, 0.055) 1px, transparent 1px);
+  background-size: 64px 64px;
+  background-position: center;
+}
+
+@media (max-width: 640px) {
+  .nx-grid-bg {
+    background-size: 40px 40px;
+  }
+}
+
+/**
+ * Reduced motion: keep the interface legible and calm, drop everything decorative.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .nx-motion-optional {
+    display: none !important;
+  }
+
+  .nx-anim-float,
+  .nx-anim-orbit-fade,
+  .nx-anim-dash {
+    animation: none !important;
+  }
+}

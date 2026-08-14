@@ -1,0 +1,62 @@
+import {
+  BrainCircuit,
+  Boxes,
+  Building2,
+  Cloud,
+  Code2,
+  Dumbbell,
+  Factory,
+  Globe,
+  GraduationCap,
+  HeartPulse,
+  Hotel,
+  LayoutDashboard,
+  Layers,
+  LifeBuoy,
+  PenTool,
+  Plug,
+  Receipt,
+  ShoppingCart,
+  Smartphone,
+  Store,
+  Truck,
+  Landmark,
+  Users,
+  UtensilsCrossed,
+  Workflow,
+  type LucideIcon,
+} from 'lucide-react';
+
+/**
+ * Icon registry. Data files reference icons by name so they stay plain data and
+ * can be moved to a CMS or API later without dragging React imports along.
+ */
+export const iconRegistry = {
+  BrainCircuit,
+  Boxes,
+  Building2,
+  Cloud,
+  Code2,
+  Dumbbell,
+  Factory,
+  Globe,
+  GraduationCap,
+  HeartPulse,
+  Hotel,
+  Landmark,
+  LayoutDashboard,
+  Layers,
+  LifeBuoy,
+  PenTool,
+  Plug,
+  Receipt,
+  ShoppingCart,
+  Smartphone,
+  Store,
+  Truck,
+  Users,
+  UtensilsCrossed,
+  Workflow,
+} satisfies Record<string, LucideIcon>;
+
+export type IconName = keyof typeof iconRegistry;

@@ -1,0 +1,176 @@
+/* CSS requires every @import to precede all other statements, so all four
+   stylesheets are pulled in before the Tailwind directives run. */
+@import './tokens.css';
+@import './animations.css';
+@import './responsive.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-color: var(--nx-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-base font-sans text-ink antialiased;
+    /* The page owns a single fixed ambience layer; sections stay transparent. */
+    background-color: var(--nx-bg);
+    overflow-x: clip;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Guard against any single element pushing the document sideways. */
+  #root {
+    overflow-x: clip;
+    isolation: isolate;
+  }
+
+  ::selection {
+    background: rgba(0, 200, 255, 0.28);
+    color: var(--nx-text);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--nx-cyan);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-extrabold text-ink;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  img,
+  svg {
+    @apply max-w-full;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--nx-bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1a2a5c;
+    border-radius: 999px;
+    border: 2px solid var(--nx-bg);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #24387a;
+  }
+}
+
+@layer components {
+  .nx-container {
+    @apply mx-auto w-full px-4 sm:px-6 lg:px-8;
+    max-width: var(--nx-container);
+  }
+
+  /* Glass — used deliberately: navbar, modal, hero nodes, selected cards. */
+  .nx-glass {
+    background: var(--nx-glass);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid var(--nx-border);
+  }
+
+  .nx-glass-strong {
+    background: var(--nx-glass-strong);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    border: 1px solid var(--nx-border-strong);
+  }
+
+  .nx-gradient-text {
+    background: var(--nx-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* Keeps descenders from being clipped by the text-fill box. */
+    padding-bottom: 0.08em;
+  }
+
+  /* Hairline gradient border on hover, drawn without a layout-shifting border. */
+  .nx-card {
+    @apply relative overflow-hidden rounded-2xl border border-hairline;
+    background: linear-gradient(180deg, rgba(11, 22, 56, 0.85) 0%, rgba(7, 17, 47, 0.6) 100%);
+    transition:
+      transform var(--nx-base) var(--nx-ease),
+      border-color var(--nx-base) var(--nx-ease),
+      box-shadow var(--nx-base) var(--nx-ease);
+  }
+
+  .nx-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--nx-gradient);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity var(--nx-base) var(--nx-ease);
+    pointer-events: none;
+  }
+
+  .nx-card:hover::before,
+  .nx-card:focus-within::before {
+    opacity: 0.85;
+  }
+
+  @media (hover: hover) {
+    .nx-card:hover {
+      transform: translate3d(0, -4px, 0);
+      box-shadow: var(--tw-shadow-lift, 0 24px 70px -32px rgba(2, 8, 30, 0.95));
+    }
+  }
+
+  .nx-eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.28em] text-brand-cyan;
+  }
+
+  .nx-hairline {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--nx-border-strong) 20%,
+      var(--nx-border-strong) 80%,
+      transparent
+    );
+  }
+}
+
+@layer utilities {
+  .nx-mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  }
+
+  .nx-gpu {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+}

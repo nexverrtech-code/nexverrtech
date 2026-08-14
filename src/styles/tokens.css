@@ -1,0 +1,51 @@
+/**
+ * NEXVERR design tokens.
+ * Every colour, radius and timing used across the site resolves back to this file.
+ */
+
+:root {
+  /* Surfaces */
+  --nx-bg: #030922;
+  --nx-bg-secondary: #07112f;
+  --nx-surface: #0b1638;
+  --nx-surface-raised: #101d45;
+
+  /* Brand */
+  --nx-blue: #006af5;
+  --nx-electric: #167bff;
+  --nx-cyan: #00c8ff;
+  --nx-violet: #5220e8;
+  --nx-purple: #7b1fff;
+
+  /* Text */
+  --nx-text: #f8faff;
+  --nx-text-muted: #9ba7c7;
+  --nx-text-faint: #6b78a0;
+
+  /* Lines & glass */
+  --nx-border: rgba(255, 255, 255, 0.08);
+  --nx-border-strong: rgba(255, 255, 255, 0.14);
+  --nx-glass: rgba(10, 22, 56, 0.55);
+  --nx-glass-strong: rgba(7, 17, 47, 0.82);
+
+  /* Signature gradient */
+  --nx-gradient: linear-gradient(
+    135deg,
+    #00c8ff 0%,
+    #006af5 45%,
+    #5220e8 75%,
+    #7b1fff 100%
+  );
+
+  /* Motion */
+  --nx-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --nx-fast: 200ms;
+  --nx-base: 300ms;
+  --nx-slow: 400ms;
+
+  /* Layout */
+  --nx-nav-height: 72px;
+  --nx-container: 1320px;
+
+  color-scheme: dark;
+}
