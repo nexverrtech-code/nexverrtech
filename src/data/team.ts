@@ -12,10 +12,6 @@ export interface TeamMember {
  */
 export const foundingTeam: TeamMember[] = [
   {
-    name: 'Mohammed Riyaz',
-    role: 'Co-Founder / Full Stack Developer',
-  },
-  {
     name: 'Panneer Selvam M',
     role: 'Co-Founder / Software Developer',
   },
