@@ -8,16 +8,12 @@ import { Reveal } from '@/components/effects/Reveal';
 import { hasProjects, visibleProjects } from '@/data/projects';
 import { useInquiry } from '@/context/InquiryContext';
 import { useSeo } from '@/hooks/useSeo';
+import { routeSeo } from '@/lib/routeSeo';
 
 export default function Projects() {
   const { openInquiry } = useInquiry();
 
-  useSeo({
-    title: 'Projects — Work by NEXVERR TECHNOLOGIES',
-    description:
-      'Systems NEXVERR TECHNOLOGIES has designed, built, deployed and continues to support for businesses across retail, education, healthcare, hospitality and manufacturing.',
-    path: '/projects',
-  });
+  useSeo(routeSeo.projects);
 
   return (
     <>

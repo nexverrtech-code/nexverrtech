@@ -8,6 +8,7 @@ import { Reveal } from '@/components/effects/Reveal';
 import { services } from '@/data/services';
 import { solutionGroups, type SolutionGroupId } from '@/data/solutions';
 import { useSeo } from '@/hooks/useSeo';
+import { routeSeo } from '@/lib/routeSeo';
 import { cn } from '@/lib/utils';
 
 const ALL = 'all';
@@ -17,12 +18,7 @@ export default function Services() {
   const [searchParams, setSearchParams] = useSearchParams();
   const active = searchParams.get('group') ?? ALL;
 
-  useSeo({
-    title: 'Services — Custom Software, ERP, Mobile & AI | NEXVERR TECHNOLOGIES',
-    description:
-      'The full NEXVERR service catalog: websites and e-commerce, ERP, CRM, POS and billing systems, mobile apps, automation, AI/ML, cloud, UI/UX and SaaS product development.',
-    path: '/services',
-  });
+  useSeo(routeSeo.services);
 
   const filtered = useMemo(
     () => (active === ALL ? services : services.filter((service) => service.group === active)),

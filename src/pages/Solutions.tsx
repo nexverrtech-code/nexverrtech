@@ -9,14 +9,10 @@ import { industries } from '@/data/industries';
 import { solutionGroups } from '@/data/solutions';
 import { getServicesByGroup } from '@/data/services';
 import { useSeo } from '@/hooks/useSeo';
+import { routeSeo } from '@/lib/routeSeo';
 
 export default function Solutions() {
-  useSeo({
-    title: 'Solutions by Industry — Retail, Education, Healthcare | NEXVERR TECHNOLOGIES',
-    description:
-      'Solutions built around how your business works — retail, e-commerce, education, healthcare, hospitality, manufacturing, real estate, fitness, logistics and finance.',
-    path: '/solutions',
-  });
+  useSeo(routeSeo.solutions);
 
   return (
     <>

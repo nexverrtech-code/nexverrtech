@@ -5,8 +5,9 @@ import { SelectedWork } from '@/components/sections/SelectedWork';
 import { WhyNexverr } from '@/components/sections/WhyNexverr';
 import { StartYourProject } from '@/components/sections/StartYourProject';
 import { useSeo } from '@/hooks/useSeo';
+import { routeSeo } from '@/lib/routeSeo';
 import { organizationJsonLd } from '@/lib/seo';
-import { siteConfig } from '@/lib/config';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 /**
  * Eight blocks, in the order a visitor forms questions:
@@ -14,19 +15,11 @@ import { siteConfig } from '@/lib/config';
  * have you built it → can I trust you → let's talk.
  */
 export default function Home() {
-  useSeo({
-    title: 'NEXVERR TECHNOLOGIES — Turn Business Challenges Into Digital Solutions',
-    description: siteConfig.description,
-    path: '/',
-  });
+  useSeo(routeSeo.home);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        // Static, developer-authored JSON-LD — no user input is involved.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
-      />
+      <JsonLd data={organizationJsonLd()} />
       <Hero />
       <WhatWeBuild />
       <SolutionsIndustries />

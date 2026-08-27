@@ -10,6 +10,9 @@ import { getServicesByGroup, serviceMap } from '@/data/services';
 import { solutionGroupMap } from '@/data/solutions';
 import { approachSteps } from '@/data/approach';
 import { useSeo } from '@/hooks/useSeo';
+import { breadcrumbJsonLd, serviceJsonLd } from '@/lib/seo';
+import { serviceSeo } from '@/lib/routeSeo';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { useInquiry } from '@/context/InquiryContext';
 import { padIndex } from '@/lib/utils';
 
@@ -18,14 +21,19 @@ export default function ServiceDetail() {
   const service = serviceMap[slug];
   const { openInquiry } = useInquiry();
 
-  useSeo({
-    title: service
-      ? `${service.title} — NEXVERR TECHNOLOGIES`
-      : 'Service not found — NEXVERR TECHNOLOGIES',
-    description: service?.description ?? 'This service could not be found.',
-    path: `/services/${slug}`,
-    noIndex: !service,
-  });
+  // `seoTitle` and `metaDescription` are written per service so no two pages
+  // compete for the same query or share a search snippet. An unknown slug is
+  // marked noindex rather than inheriting a real service's metadata.
+  useSeo(
+    service
+      ? serviceSeo(service)
+      : {
+          title: 'Service not found — NEXVERR TECHNOLOGIES',
+          description: 'This service could not be found.',
+          path: `/services/${slug}`,
+          noIndex: true,
+        },
+  );
 
   if (!service) return <Navigate to="/services" replace />;
 
@@ -36,6 +44,22 @@ export default function ServiceDetail() {
 
   return (
     <>
+      <JsonLd
+        data={[
+          serviceJsonLd({
+            name: service.title,
+            description: service.description,
+            path: `/services/${service.slug}`,
+            category: group.title,
+          }),
+          breadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: 'Services', path: '/services' },
+            { name: service.title, path: `/services/${service.slug}` },
+          ]),
+        ]}
+      />
+
       <section className="relative overflow-hidden pb-12 pt-[calc(var(--nx-nav-height)+3rem)] lg:pt-[calc(var(--nx-nav-height)+4.5rem)]">
         <div aria-hidden="true" className="nx-grid-bg nx-mask-fade-b absolute inset-0 opacity-50" />
         <AmbientGlow className="-right-24 -top-32" tone="cyan" size={520} />

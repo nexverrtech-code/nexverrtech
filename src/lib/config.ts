@@ -5,7 +5,7 @@
 
 const rawWhatsApp = (import.meta.env.VITE_WHATSAPP_NUMBER ?? '').replace(/\D/g, '');
 const rawEmail = (import.meta.env.VITE_CONTACT_EMAIL ?? '').trim();
-const rawSiteUrl = (import.meta.env.VITE_SITE_URL ?? 'https://nexverr.com').replace(/\/+$/, '');
+const rawSiteUrl = (import.meta.env.VITE_SITE_URL || 'https://nexverrtech.com').replace(/\/+$/, '');
 
 export const siteConfig = {
   name: 'NEXVERR TECHNOLOGIES',

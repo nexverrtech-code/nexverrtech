@@ -8,15 +8,11 @@ import { foundingTeam } from '@/data/team';
 import { headquarters } from '@/data/branches';
 import { siteConfig } from '@/lib/config';
 import { useSeo } from '@/hooks/useSeo';
+import { routeSeo } from '@/lib/routeSeo';
 import { padIndex } from '@/lib/utils';
 
 export default function About() {
-  useSeo({
-    title: 'About — NEXVERR TECHNOLOGIES, Erode',
-    description:
-      'NEXVERR TECHNOLOGIES is a technology company based in Erode, Tamil Nadu, focused on business digitalization and custom software built around how a business actually works.',
-    path: '/about',
-  });
+  useSeo(routeSeo.about);
 
   return (
     <>

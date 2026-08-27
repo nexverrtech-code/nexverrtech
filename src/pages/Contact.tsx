@@ -8,17 +8,13 @@ import { contactConfig } from '@/lib/config';
 import { createWhatsAppDirectUrl } from '@/lib/whatsapp';
 import { createMailtoLink } from '@/lib/email';
 import { useSeo } from '@/hooks/useSeo';
+import { routeSeo } from '@/lib/routeSeo';
 
 export default function Contact() {
   const whatsappUrl = createWhatsAppDirectUrl();
   const mailtoUrl = createMailtoLink('Project enquiry');
 
-  useSeo({
-    title: 'Contact — Start a Project with NEXVERR TECHNOLOGIES',
-    description:
-      'Tell NEXVERR TECHNOLOGIES what you are building. Send your project requirement over WhatsApp or email and we will come back with the right approach.',
-    path: '/contact',
-  });
+  useSeo(routeSeo.contact);
 
   return (
     <>

@@ -12,6 +12,10 @@ export interface Service {
   description: string;
   /** What the engagement typically covers. Capability scope, not past results. */
   covers: string[];
+  /** Search-result title. Leads with the keyword this page targets, ~60 chars. */
+  seoTitle: string;
+  /** Search-result snippet. Unique per service, 145-160 characters. */
+  metaDescription: string;
 }
 
 /**
@@ -34,6 +38,9 @@ export const services: Service[] = [
       'Content structure and page-level SEO',
       'Performance and responsive implementation',
     ],
+    seoTitle: 'Website Development Company in Erode | NEXVERR',
+    metaDescription:
+      'Corporate websites, landing pages and customer portals built in Erode, Tamil Nadu — fast to load, right on every screen size and simple to keep updated.',
   },
   {
     slug: 'ecommerce-development',
@@ -50,6 +57,9 @@ export const services: Service[] = [
       'Customer accounts and order history',
       'Admin dashboard for day-to-day operations',
     ],
+    seoTitle: 'E-Commerce Website Development Company India | NEXVERR',
+    metaDescription:
+      'E-commerce website development in India: product catalog, checkout, payment gateways, orders and inventory set up around your real pricing and delivery rules.',
   },
   {
     slug: 'custom-software-development',
@@ -66,6 +76,9 @@ export const services: Service[] = [
       'Reporting and exports',
       'Deployment and ongoing maintenance',
     ],
+    seoTitle: 'Custom Software Development Company in Erode | NEXVERR',
+    metaDescription:
+      'Custom software development company in Erode, Tamil Nadu. We map how your business already works, then build and maintain a system shaped around that workflow.',
   },
   {
     slug: 'erp-systems',
@@ -82,6 +95,9 @@ export const services: Service[] = [
       'Staff, roles and approvals',
       'Management dashboards',
     ],
+    seoTitle: 'ERP Software for Small Business in India | NEXVERR',
+    metaDescription:
+      'Affordable ERP software for small and mid-sized businesses in India. Inventory, purchase, sales, accounts and dashboards in one system, scoped to what you run.',
   },
   {
     slug: 'restaurant-pos',
@@ -98,6 +114,9 @@ export const services: Service[] = [
       'Billing and payment modes',
       'Daily sales and item reports',
     ],
+    seoTitle: 'Restaurant POS & Billing Software India | NEXVERR',
+    metaDescription:
+      'Restaurant POS and billing software for India: table, takeaway and delivery orders, kitchen tickets, menu and tax setup, and daily sales reports in one system.',
   },
   {
     slug: 'billing-inventory-systems',
@@ -114,6 +133,9 @@ export const services: Service[] = [
       'Low-stock and reorder visibility',
       'Sales, tax and stock reports',
     ],
+    seoTitle: 'Billing & Inventory Software for Business | NEXVERR',
+    metaDescription:
+      'Billing and inventory software built around your tax rules and how your counter works — invoices, stock in and out, supplier records, reorder alerts, reports.',
   },
   {
     slug: 'crm',
@@ -130,6 +152,9 @@ export const services: Service[] = [
       'Customer records and notes',
       'Conversion and performance reporting',
     ],
+    seoTitle: 'CRM Software for Small Business in India | NEXVERR',
+    metaDescription:
+      'CRM software matched to your real sales process: lead capture and assignment, pipeline stages, follow-up reminders, customer history and conversion reporting.',
   },
   {
     slug: 'school-college-management',
@@ -146,6 +171,9 @@ export const services: Service[] = [
       'Fee collection and dues',
       'Staff, student and parent access',
     ],
+    seoTitle: 'School & College Management Software India | NEXVERR',
+    metaDescription:
+      'School and college management software for India: admissions, attendance, timetables, examinations, fee collection, and staff, student and parent access levels.',
   },
   {
     slug: 'healthcare-clinic-solutions',
@@ -162,6 +190,9 @@ export const services: Service[] = [
       'Billing and payment tracking',
       'Role-based access control',
     ],
+    seoTitle: 'Clinic & Hospital Management Software India | NEXVERR',
+    metaDescription:
+      'Clinic and hospital management software for India — appointment scheduling, patient records, prescriptions, billing and role-based access to sensitive data.',
   },
   {
     slug: 'gym-fitness-management',
@@ -178,6 +209,9 @@ export const services: Service[] = [
       'Renewal and expiry tracking',
       'Payment and dues reporting',
     ],
+    seoTitle: 'Gym & Fitness Management Software India | NEXVERR',
+    metaDescription:
+      'Gym and fitness studio management software: member profiles, plans and pricing, check-in and attendance, renewal and expiry tracking, and dues reporting.',
   },
   {
     slug: 'manufacturing-software',
@@ -194,6 +228,9 @@ export const services: Service[] = [
       'Quality and rejection logging',
       'Output and efficiency reporting',
     ],
+    seoTitle: 'Manufacturing Software & Production ERP | NEXVERR',
+    metaDescription:
+      'Manufacturing software for production floors in Tamil Nadu: job order tracking, raw material consumption, work-in-progress visibility, quality logs and output.',
   },
   {
     slug: 'mobile-app-development',
@@ -210,6 +247,9 @@ export const services: Service[] = [
       'Push notifications',
       'Store release and updates',
     ],
+    seoTitle: 'Mobile App Development Company in Erode | NEXVERR',
+    metaDescription:
+      'Android and iOS app development in Erode, Tamil Nadu — customer-facing apps, field team tools and mobile companions to the systems you already run today.',
   },
   {
     slug: 'admin-dashboards-analytics',
@@ -226,6 +266,9 @@ export const services: Service[] = [
       'Exports and scheduled reports',
       'Data visualisation',
     ],
+    seoTitle: 'Admin Dashboards & Business Analytics | NEXVERR',
+    metaDescription:
+      'Admin dashboards and analytics designed around the decisions they support — role-specific views, filters and drill-downs, exports and scheduled reporting.',
   },
   {
     slug: 'business-automation',
@@ -242,6 +285,9 @@ export const services: Service[] = [
       'Notification and alert rules',
       'Document and report generation',
     ],
+    seoTitle: 'Business Process Automation Services India | NEXVERR',
+    metaDescription:
+      'Business process automation in India: we map where staff re-enter data or chase a status, then automate that flow with scheduled jobs, alerts and documents.',
   },
   {
     slug: 'api-third-party-integrations',
@@ -258,6 +304,9 @@ export const services: Service[] = [
       'Data synchronisation between systems',
       'Webhooks and error handling',
     ],
+    seoTitle: 'API & Third-Party Integration Services | NEXVERR',
+    metaDescription:
+      'API development and third-party integration services — payment, messaging, accounting and logistics gateways, data sync between systems, webhooks and retries.',
   },
   {
     slug: 'ai-ml-solutions',
@@ -274,6 +323,9 @@ export const services: Service[] = [
       'Document and text processing',
       'Ongoing evaluation',
     ],
+    seoTitle: 'AI & Machine Learning Development Company India | NEXVERR',
+    metaDescription:
+      'AI development company in India applying machine learning to a defined business problem — classification, prediction and document handling your data supports.',
   },
   {
     slug: 'cloud-deployment-hosting',
@@ -290,6 +342,9 @@ export const services: Service[] = [
       'Backups and recovery',
       'Monitoring and scaling',
     ],
+    seoTitle: 'Cloud Deployment & Hosting Services | NEXVERR',
+    metaDescription:
+      'Cloud deployment and hosting: environments, domain, DNS and SSL setup, build and release pipelines, backups and recovery, plus monitoring and scaling headroom.',
   },
   {
     slug: 'maintenance-technical-support',
@@ -306,6 +361,9 @@ export const services: Service[] = [
       'Performance monitoring',
       'Technical support for your team',
     ],
+    seoTitle: 'Software Maintenance & Technical Support | NEXVERR',
+    metaDescription:
+      'Software maintenance and technical support after launch: bug fixes, security and dependency updates, feature changes, performance monitoring and team support.',
   },
   {
     slug: 'ui-ux-design',
@@ -322,6 +380,9 @@ export const services: Service[] = [
       'Design systems and components',
       'Responsive and accessible layouts',
     ],
+    seoTitle: 'UI/UX Design Services for Web & Mobile Apps | NEXVERR',
+    metaDescription:
+      'UI/UX design for web and mobile: user flows and information architecture, wireframes and prototypes, interface design, and accessible responsive layouts.',
   },
   {
     slug: 'saas-product-development',
@@ -338,6 +399,9 @@ export const services: Service[] = [
       'Onboarding and admin tooling',
       'Release and iteration support',
     ],
+    seoTitle: 'SaaS Product Development Company India | NEXVERR',
+    metaDescription:
+      'SaaS product development in India: multi-tenant data design, subscription and plan management, onboarding and admin tooling, plus release and iteration support.',
   },
 ];
 

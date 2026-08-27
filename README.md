@@ -16,7 +16,7 @@ Edit `.env`:
 
 ```
 VITE_WHATSAPP_NUMBER=91XXXXXXXXXX     # digits only, with country code
-VITE_CONTACT_EMAIL=you@nexverr.com
+VITE_CONTACT_EMAIL=you@nexverrtech.com
 VITE_SITE_URL=https://your-domain.com
 ```
 
@@ -62,6 +62,38 @@ pages light up automatically. To preview the templates first, flip
 `showSampleProjects` to `true` — sample entries are badged "Sample" in the UI.
 
 ---
+
+## SEO
+
+Three things have to agree: the canonical/OG tags a visitor's browser ends up
+with, the same tags baked into the static HTML, and the URL list in
+`sitemap.xml`. All three are generated from **`src/lib/routeSeo.ts`**, so they
+cannot drift apart. They had: every canonical tag, the sitemap and `robots.txt`
+once pointed at a domain the company does not own, which kept the site out of
+Google's index entirely.
+
+`npm run build` runs `scripts/build-seo.mjs` after `vite build`. It writes:
+
+- **one HTML file per route** (`dist/services/erp-systems/index.html`, and so on)
+  carrying that route's own `<title>`, description and canonical *already in the
+  markup*. The SPA only fills those in after React runs, and social scrapers and
+  AI answer engines never run it.
+- **`dist/sitemap.xml`** and **`dist/robots.txt`**, both built from
+  `siteConfig.url`.
+
+The build fails loudly if `siteConfig.url` is not a bare `https://` origin.
+
+> **Deploy setting:** the hosting build command must be `npm run build`, not
+> `vite build`. The latter skips SEO generation, and the deploy ships with no
+> sitemap, no `robots.txt` and identical tags on every URL.
+
+To add a page, add it to `routeSeo.ts` and point that page's `useSeo()` at the
+entry. Per-service search copy lives in `src/data/services.ts` as `seoTitle` and
+`metaDescription`.
+
+`VITE_SITE_URL` is read in exactly one place, `src/lib/config.ts`. `.env` is
+gitignored, so **production reads it from the hosting dashboard** — set wrong
+there, it silently overrides the default and the canonical tags go with it.
 
 ## Running it
 
