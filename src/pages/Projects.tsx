@@ -15,7 +15,13 @@ export default function Projects() {
       ...routeSeo.projects,
       schema: [
         ...routeSeo.projects.schema,
-        itemListJsonLd('Projects by NEXVERR TECHNOLOGIES', projects.map((project) => ({ name: project.title, path: `/projects/${project.slug}` }))),
+        itemListJsonLd(
+          'Projects by NEXVERR TECHNOLOGIES',
+          projects.map((project) => ({
+            name: project.title,
+            path: `/projects/${project.slug}`,
+          })),
+        ),
       ],
     }),
     [],
@@ -32,21 +38,47 @@ export default function Projects() {
         breadcrumbs={routeSeo.projects.breadcrumbs}
       />
 
-      <section className="nx-section-tight pt-0" aria-label="Project list">
+      <section
+        className="nx-section-tight pt-0"
+        aria-label="Project list"
+      >
         <Container>
           <ul className="grid gap-5 sm:grid-cols-2">
             {projects.map((project, index) => (
-              <Reveal as="li" key={project.slug} delay={Math.min(index, 6) * 0.06}>
-                <ProjectCard project={project} />
+              <Reveal
+                as="li"
+                key={project.slug}
+                delay={Math.min(index, 6) * 0.06}
+              >
+                <div className="flex h-full flex-col">
+                  <ProjectCard project={project} />
+
+                  {project.liveUrl && (
+                    <div className="mt-4 flex justify-center">
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center rounded-full border border-current px-5 py-2.5 text-sm font-medium transition-opacity hover:opacity-75"
+                        aria-label={`View live website for ${project.title}`}
+                      >
+                        View Live Website
+                        <span className="ml-2" aria-hidden="true">
+                          ↗
+                        </span>
+                      </a>
+                    </div>
+                  )}
+                </div>
               </Reveal>
             ))}
           </ul>
 
           <Reveal className="mt-10">
             <p className="max-w-prose text-sm leading-relaxed text-ink-faint">
-              Case studies are published here once the client is happy for the details to be
-              shared. Where a figure or a screenshot is not yet confirmed, the page says nothing
-              rather than filling the space.
+              Case studies are published here once the client is happy for the
+              details to be shared. Where a figure or a screenshot is not yet
+              confirmed, the page says nothing rather than filling the space.
             </p>
           </Reveal>
         </Container>

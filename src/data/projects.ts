@@ -37,6 +37,9 @@ export interface Project {
   tags: string[];
   featured?: boolean;
 
+  /** Live website/project URL. */
+  liveUrl?: string;
+
   /** Case-study body. Sections render only when the field is present. */
   about: string;
   challenge?: string[];
@@ -73,6 +76,8 @@ export const projects: Project[] = [
     tags: ['Business Website', 'Digital Presence', 'Responsive'],
     featured: true,
 
+    liveUrl: 'https://sriaadhikumaran.in/',
+
     about:
       'Sri Aadhi Kumaran Batteries is a battery and automotive business operating in Erode, Tamil Nadu. NEXVERR TECHNOLOGIES designed and built the business website that carries its presence online.',
 
@@ -91,7 +96,11 @@ export const projects: Project[] = [
       'From there the work ran through design, build, testing across real devices, and deployment, with the site reviewed against how it is used rather than how it looks in a mockup. It remains supported after launch.',
     ],
 
-    relatedServices: ['website-development', 'ui-ux-design', 'maintenance-technical-support'],
+    relatedServices: [
+      'website-development',
+      'ui-ux-design',
+      'maintenance-technical-support',
+    ],
     relatedIndustry: 'retail',
 
     seoTitle: 'Sri Aadhi Kumaran Batteries Website Project | NEXVERR',
@@ -99,6 +108,7 @@ export const projects: Project[] = [
       'Explore the website project developed by NEXVERR TECHNOLOGIES for Sri Aadhi Kumaran Batteries in Erode, Tamil Nadu.',
     ogImage: '/og/sri-aadhi-kumaran-batteries.png',
   },
+
   {
     slug: 'kongu-nila-matrimony',
     client: 'Kongu Nila Matrimony',
@@ -110,6 +120,8 @@ export const projects: Project[] = [
       'A matrimony website and digital platform for a matrimony service based in Erode.',
     tags: ['Digital Platform', 'Matrimony', 'Responsive'],
     featured: true,
+
+    liveUrl: 'https://kongu-nila-matrimony.vercel.app/',
 
     about:
       'Kongu Nila Matrimony is a matrimony service based in Erode, Tamil Nadu. NEXVERR TECHNOLOGIES developed its matrimony website and digital platform.',
@@ -129,7 +141,11 @@ export const projects: Project[] = [
       'Design, build, testing and deployment followed from that, reviewed at each stage against real usage rather than a specification written up front. The platform continues to be supported after launch.',
     ],
 
-    relatedServices: ['website-development', 'ui-ux-design', 'custom-software-development'],
+    relatedServices: [
+      'website-development',
+      'ui-ux-design',
+      'custom-software-development',
+    ],
 
     seoTitle: 'Kongu Nila Matrimony Website Project | NEXVERR',
     metaDescription:
@@ -142,19 +158,31 @@ export const projectMap = Object.fromEntries(
   projects.map((project) => [project.slug, project]),
 ) as Record<string, Project>;
 
-export const featuredProjects: Project[] = projects.filter((project) => project.featured);
+export const featuredProjects: Project[] = projects.filter(
+  (project) => project.featured,
+);
 
-export function getProjectBySlug(slug: string): Project | undefined {
+export function getProjectBySlug(
+  slug: string,
+): Project | undefined {
   return projectMap[slug];
 }
 
 /** Projects that name this service as related — powers "Related work" blocks. */
-export function getProjectsForService(serviceSlug: string): Project[] {
-  return projects.filter((project) => project.relatedServices.includes(serviceSlug));
+export function getProjectsForService(
+  serviceSlug: string,
+): Project[] {
+  return projects.filter((project) =>
+    project.relatedServices.includes(serviceSlug),
+  );
 }
 
-export function getProjectsForIndustry(industrySlug: string): Project[] {
-  return projects.filter((project) => project.relatedIndustry === industrySlug);
+export function getProjectsForIndustry(
+  industrySlug: string,
+): Project[] {
+  return projects.filter(
+    (project) => project.relatedIndustry === industrySlug,
+  );
 }
 
 export const hasProjects = projects.length > 0;
