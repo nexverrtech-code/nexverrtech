@@ -95,9 +95,9 @@ export const services: Service[] = [
       'Staff, roles and approvals',
       'Management dashboards',
     ],
-    seoTitle: 'ERP Software for Small Business in India | NEXVERR',
+    seoTitle: 'ERP Software Company in Erode | NEXVERR',
     metaDescription:
-      'Affordable ERP software for small and mid-sized businesses in India. Inventory, purchase, sales, accounts and dashboards in one system, scoped to what you run.',
+      'ERP software company in Erode, Tamil Nadu. Inventory, purchase, sales, accounts and management dashboards in one system, scoped to the way your business runs.',
   },
   {
     slug: 'restaurant-pos',
@@ -133,9 +133,9 @@ export const services: Service[] = [
       'Low-stock and reorder visibility',
       'Sales, tax and stock reports',
     ],
-    seoTitle: 'Billing & Inventory Software for Business | NEXVERR',
+    seoTitle: 'Billing Software in Erode | Billing & Inventory | NEXVERR',
     metaDescription:
-      'Billing and inventory software built around your tax rules and how your counter works — invoices, stock in and out, supplier records, reorder alerts, reports.',
+      'Billing software in Erode built around your tax rules and how your counter works — invoices, stock in and out, supplier records, reorder alerts and reports.',
   },
   {
     slug: 'crm',
@@ -285,9 +285,9 @@ export const services: Service[] = [
       'Notification and alert rules',
       'Document and report generation',
     ],
-    seoTitle: 'Business Process Automation Services India | NEXVERR',
+    seoTitle: 'Business Automation Company in Erode | NEXVERR',
     metaDescription:
-      'Business process automation in India: we map where staff re-enter data or chase a status, then automate that flow with scheduled jobs, alerts and documents.',
+      'Business automation company in Erode. We map where staff re-enter data or chase a status, then automate that flow with scheduled jobs, alerts and documents.',
   },
   {
     slug: 'api-third-party-integrations',

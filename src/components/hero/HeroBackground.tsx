@@ -1,26 +1,15 @@
-import { motion, type MotionValue } from 'framer-motion';
-import { useTransform } from 'framer-motion';
-
-interface HeroBackgroundProps {
-  parallaxX: MotionValue<number>;
-  parallaxY: MotionValue<number>;
-}
-
 /**
- * Static ambience: grid, two brand lights and a vignette. Everything is a CSS
- * gradient — no canvas, no particle system, no repaint cost while scrolling.
+ * Static ambience: grid, two brand lights and a vignette.
+ *
+ * Everything is a CSS gradient — no canvas, no particle system, no repaint cost
+ * while scrolling, and no animation library in the critical path. The pointer
+ * parallax lives with the hero scene, which arrives after first paint; this
+ * layer has to be on screen immediately, so it stays still.
  */
-export function HeroBackground({ parallaxX, parallaxY }: HeroBackgroundProps) {
-  // The deepest layer moves least — 2px of travel is enough to read as depth.
-  const gridX = useTransform(parallaxX, [-1, 1], [2, -2]);
-  const gridY = useTransform(parallaxY, [-1, 1], [2, -2]);
-
+export function HeroBackground() {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-      <motion.div
-        className="nx-grid-bg nx-mask-fade-b absolute inset-0 opacity-70"
-        style={{ x: gridX, y: gridY }}
-      />
+      <div className="nx-grid-bg nx-mask-fade-b absolute inset-0 opacity-70" />
 
       {/* A slow pass of light down the grid, so the backdrop is never quite still */}
       <div className="nx-mask-fade-b absolute inset-0 overflow-hidden">

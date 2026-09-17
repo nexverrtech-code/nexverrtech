@@ -1,7 +1,7 @@
 /**
  * The shape of a project inquiry, shared by the form, the WhatsApp channel and
- * the email channel. When a backend/CRM is added in v2, it consumes this same
- * type — no component changes required.
+ * the email channel. Nothing here is stored anywhere — the object exists only
+ * long enough to be formatted into a message the visitor sends themselves.
  */
 export interface InquiryData {
   name: string;
@@ -9,6 +9,8 @@ export interface InquiryData {
   email: string;
   phone: string;
   service: string;
+  budget?: string;
+  timeline?: string;
   message: string;
 }
 
@@ -23,12 +25,17 @@ export interface InquiryResult {
 
 /** Formats the inquiry as the plain-text body both channels share. */
 export function formatInquiryBody(data: InquiryData): string {
+  const optional = (label: string, value?: string) =>
+    value && value.trim() ? `${label}: ${value.trim()}` : null;
+
   const lines = [
     `Name: ${data.name}`,
-    data.company?.trim() ? `Company: ${data.company.trim()}` : null,
+    optional('Company', data.company),
     `Email: ${data.email}`,
     `Phone: ${data.phone}`,
     `Service: ${data.service}`,
+    optional('Budget', data.budget),
+    optional('Timeline', data.timeline),
     '',
     'Project Requirement:',
     data.message,

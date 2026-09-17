@@ -4,27 +4,18 @@
  *   npm run brand
  *
  * Master:  brand/logo-master.png   (transparent background, any size)
- * Outputs: public/brand/nexverr-symbol.png   512×512  — the mark everywhere in the UI
+ * Outputs: public/brand/nexverr-symbol.png   512×512  — full-size mark, schema + print
+ *          public/brand/nexverr-mark.png     192×192  — the mark the UI actually renders
  *          public/brand/favicon.png           96×96   — browser tab
  *          public/brand/apple-touch-icon.png 180×180  — iOS home screen, on brand navy
- *          public/og/og-default.png         1200×630  — social preview card
  *
- * Re-run it whenever the logo changes; nothing else needs touching.
+ * Re-run it whenever the logo changes, then `npm run og` for the social cards.
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  alphaBounds,
-  blank,
-  composite,
-  crop,
-  decodePng,
-  encodePng,
-  padToSquare,
-  resize,
-} from './lib/png.mjs';
+import { alphaBounds, crop, decodePng, encodePng, padToSquare } from './lib/png.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -59,6 +50,12 @@ console.log(
 /* ------------------------------------------------------- the mark, square */
 
 await write('public/brand/nexverr-symbol.png', encodePng(padToSquare(trimmed, 512, 0.94)));
+
+// What the interface actually renders. The UI never shows the mark above 76 CSS
+// pixels, so serving the 512px file to every visitor spent 150 kB on detail no
+// screen displays.
+await write('public/brand/nexverr-mark.png', encodePng(padToSquare(trimmed, 192, 0.94)));
+
 await write('public/brand/favicon.png', encodePng(padToSquare(trimmed, 96, 0.94)));
 
 /* ------------------------------------------ iOS icon, on the brand ground */
@@ -67,65 +64,5 @@ await write(
   'public/brand/apple-touch-icon.png',
   encodePng(padToSquare(trimmed, 180, 0.7, [3, 9, 34, 255])),
 );
-
-/* ------------------------------------------------------ social card, 1200×630 */
-
-const OG_WIDTH = 1200;
-const OG_HEIGHT = 630;
-const card = blank(OG_WIDTH, OG_HEIGHT);
-
-// Brand ground: deep navy with a blue light behind the mark and a violet
-// counter-light bottom-left, painted per pixel so it needs no rasteriser.
-const lights = [
-  { x: 0.68, y: 0.42, radius: 0.62, rgb: [0, 106, 245], strength: 0.5 },
-  { x: 0.12, y: 0.9, radius: 0.55, rgb: [123, 31, 255], strength: 0.32 },
-  { x: 0.68, y: 0.42, radius: 0.24, rgb: [0, 200, 255], strength: 0.22 },
-];
-
-for (let y = 0; y < OG_HEIGHT; y += 1) {
-  for (let x = 0; x < OG_WIDTH; x += 1) {
-    const d = (y * OG_WIDTH + x) * 4;
-    const u = x / OG_WIDTH;
-    const v = y / OG_HEIGHT;
-
-    // Base gradient #030922 → #0B1638 across the diagonal.
-    const t = Math.min(1, (u + v) / 2);
-    let r = 3 + (11 - 3) * t;
-    let g = 9 + (22 - 9) * t;
-    let b = 34 + (56 - 34) * t;
-
-    for (const light of lights) {
-      const dx = (u - light.x) * (OG_WIDTH / OG_HEIGHT);
-      const dy = v - light.y;
-      const falloff = Math.max(0, 1 - Math.hypot(dx, dy) / light.radius) ** 2 * light.strength;
-      r += (light.rgb[0] - r) * falloff;
-      g += (light.rgb[1] - g) * falloff;
-      b += (light.rgb[2] - b) * falloff;
-    }
-
-    // Faint technical grid, matching the site background.
-    if (x % 60 === 0 || y % 60 === 0) {
-      r += 6;
-      g += 12;
-      b += 18;
-    }
-
-    card.data[d] = Math.round(r);
-    card.data[d + 1] = Math.round(g);
-    card.data[d + 2] = Math.round(b);
-    card.data[d + 3] = 255;
-  }
-}
-
-const ogMarkHeight = 300;
-const ogMarkWidth = Math.round((trimmed.width / trimmed.height) * ogMarkHeight);
-composite(
-  card,
-  resize(trimmed, ogMarkWidth, ogMarkHeight),
-  Math.round(OG_WIDTH * 0.66 - ogMarkWidth / 2),
-  Math.round((OG_HEIGHT - ogMarkHeight) / 2),
-);
-
-await write('public/og/og-default.png', encodePng(card));
 
 console.log('\nBrand assets rebuilt from the master logo.\n');

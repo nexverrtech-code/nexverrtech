@@ -13,7 +13,7 @@ export function InquiryModal() {
       title="Start Your Project"
       description="Tell us what you're building. We'll come back with the right approach — not a generic quote."
     >
-      <InquiryForm presetService={presetService} />
+      <InquiryForm presetService={presetService} source="modal" />
     </Modal>
   );
 }

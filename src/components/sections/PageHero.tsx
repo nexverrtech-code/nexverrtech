@@ -2,22 +2,36 @@ import type { ReactNode } from 'react';
 import { Container } from '@/components/ui/Container';
 import { Reveal } from '@/components/effects/Reveal';
 import { AmbientGlow } from '@/components/effects/AmbientGlow';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import type { Crumb } from '@/lib/seo';
 
 interface PageHeroProps {
   eyebrow: string;
   title: ReactNode;
   description?: ReactNode;
   children?: ReactNode;
+  /** Trail from `routeSeo`. Rendered above the eyebrow on deep pages. */
+  breadcrumbs?: Crumb[];
+  tone?: 'blue' | 'cyan' | 'violet';
 }
 
 /** Shared masthead for every inner page — one implementation, one rhythm. */
-export function PageHero({ eyebrow, title, description, children }: PageHeroProps) {
+export function PageHero({
+  eyebrow,
+  title,
+  description,
+  children,
+  breadcrumbs,
+  tone = 'blue',
+}: PageHeroProps) {
   return (
-    <section className="relative overflow-hidden pb-14 pt-[calc(var(--nx-nav-height)+3.5rem)] sm:pb-16 lg:pb-20 lg:pt-[calc(var(--nx-nav-height)+5rem)]">
+    <section className="relative overflow-hidden pb-14 pt-[calc(var(--nx-nav-height)+2.5rem)] sm:pb-16 lg:pb-20 lg:pt-[calc(var(--nx-nav-height)+4rem)]">
       <div aria-hidden="true" className="nx-grid-bg nx-mask-fade-b absolute inset-0 opacity-50" />
-      <AmbientGlow className="-right-32 -top-40" tone="blue" size={560} />
+      <AmbientGlow className="-right-32 -top-40" tone={tone} size={560} />
 
       <Container className="relative">
+        {breadcrumbs ? <Breadcrumbs items={breadcrumbs} className="mb-8" /> : null}
+
         <Reveal className="max-w-3xl">
           <p className="nx-eyebrow">
             <span aria-hidden="true" className="h-px w-8 bg-brand-cyan/60" />

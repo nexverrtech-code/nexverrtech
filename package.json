@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build && node scripts/build-seo.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "brand": "node scripts/build-brand-assets.mjs"
+    "brand": "node scripts/build-brand-assets.mjs",
+    "og": "node scripts/build-og-assets.mjs",
+    "seo:check": "node scripts/check-seo.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

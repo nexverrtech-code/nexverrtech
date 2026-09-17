@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion';
+import type { CSSProperties } from 'react';
 import { siteConfig } from '@/lib/config';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { HeroCTA } from './HeroCTA';
 import { HeroLocation } from './HeroLocation';
 import { HeroTrustStrip } from './HeroTrustStrip';
@@ -8,42 +7,46 @@ import { HeroTrustStrip } from './HeroTrustStrip';
 /**
  * The message, in the order a visitor actually forms questions:
  * who is this → can they help me → what do I do next.
+ *
+ * The heading deliberately has no entrance animation. It is the largest
+ * contentful element on the page, so anything that fades it in — even by a
+ * fifth of a second — is a fifth of a second added to LCP for every visitor.
+ * Everything around it animates in CSS, which needs no JavaScript to start and
+ * collapses to an instant appearance under `prefers-reduced-motion`.
  */
+const enter = (delay: number): CSSProperties => ({ animationDelay: `${delay}s` });
+
 export function HeroContent() {
-  const reducedMotion = useReducedMotion();
-
-  const enter = (delay: number) => ({
-    initial: reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18 },
-    animate: { opacity: 1, y: 0 },
-    transition: { delay: reducedMotion ? 0 : delay, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
-  });
-
   return (
     <div className="relative z-10 max-w-3xl">
-      <motion.div className="flex flex-wrap items-center gap-x-4 gap-y-3" {...enter(0.1)}>
+      <div
+        className="flex animate-fade-up flex-wrap items-center gap-x-4 gap-y-3"
+        style={enter(0.04)}
+      >
         <p className="nx-eyebrow">
           <span aria-hidden="true" className="h-px w-8 bg-brand-cyan/60" />
           {siteConfig.tagline}
         </p>
         <HeroLocation />
-      </motion.div>
+      </div>
 
-      <motion.h1 id="hero-heading" className="mt-6 text-display" {...enter(0.2)}>
+      <h1 id="hero-heading" className="mt-6 text-display">
         Turn Your Business Challenges
         <br className="hidden sm:block" />{' '}
         <span className="nx-gradient-text">Into Digital Solutions.</span>
-      </motion.h1>
+      </h1>
 
-      <motion.p className="mt-6 max-w-xl text-lead text-ink-muted" {...enter(0.32)}>
+      <p className="mt-6 max-w-xl animate-fade-up text-lead text-ink-muted" style={enter(0.1)}>
         We understand how your business works, then build the software, systems and digital
-        experiences that help it work better.
-      </motion.p>
+        experiences that help it work better — from{' '}
+        {siteConfig.city}, {siteConfig.region}.
+      </p>
 
-      <motion.div className="mt-9" {...enter(0.44)}>
+      <div className="mt-9 animate-fade-up" style={enter(0.18)}>
         <HeroCTA />
-      </motion.div>
+      </div>
 
-      <div className="mt-10">
+      <div className="mt-10 animate-fade-up" style={enter(0.26)}>
         <HeroTrustStrip />
       </div>
     </div>

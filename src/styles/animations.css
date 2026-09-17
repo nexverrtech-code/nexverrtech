@@ -76,6 +76,50 @@
   }
 }
 
+/**
+ * Scroll reveal. Driven by `components/effects/Reveal.tsx`, which adds
+ * `.is-visible` the first time the element enters the viewport. Kept in CSS so
+ * a page full of revealed blocks costs one class change each rather than a
+ * animation-library component each.
+ */
+.nx-reveal {
+  opacity: 0;
+  transform: translate3d(0, var(--nx-reveal-y, 16px), 0);
+  transition:
+    opacity 0.55s var(--nx-ease),
+    transform 0.55s var(--nx-ease);
+  will-change: opacity, transform;
+}
+
+.nx-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* The brand hold between first paint and the app being ready. */
+.nx-preloader {
+  transition: opacity 0.3s var(--nx-ease);
+}
+
+.nx-preloader.is-leaving {
+  opacity: 0;
+}
+
+.nx-preloader-bar {
+  transform-origin: left;
+  animation: nx-progress 0.7s ease-in-out both;
+}
+
+@keyframes nx-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 /* Grid backdrop — a single repeating gradient rather than hundreds of nodes. */
 .nx-grid-bg {
   background-image:
@@ -112,5 +156,13 @@
   .nx-anim-orbit-fade,
   .nx-anim-dash {
     animation: none !important;
+  }
+
+  /* Revealed content is simply present — never waiting on an observer. */
+  .nx-reveal,
+  .nx-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none !important;
   }
 }

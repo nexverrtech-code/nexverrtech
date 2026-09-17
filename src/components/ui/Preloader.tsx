@@ -1,74 +1,80 @@
 import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { brandAssets } from '@/components/brand/brandAssets';
 import { siteConfig } from '@/lib/config';
+import { cn } from '@/lib/utils';
 
-/** Short by design — long enough to feel composed, never long enough to annoy. */
-const HOLD_MS = 700;
+/** How long the fade-out runs. Must match `.nx-preloader` in animations.css. */
+const FADE_MS = 300;
 
+/**
+ * The brand moment between the first paint and the app being ready.
+ *
+ * It holds for exactly as long as that takes and not a millisecond longer: the
+ * timer that used to keep it on screen for 700 ms was 700 ms of hidden hero,
+ * paid for by every visitor on every load. `index.html` paints the same mark
+ * before the bundle arrives, so the sequence still reads as one continuous
+ * brand moment — it just no longer waits for its own animation to finish.
+ *
+ * Written in CSS rather than with the animation library, because this component
+ * mounts on every page: importing the library here would put it in the first
+ * chunk of every route, for one fade.
+ */
 export function Preloader() {
-  const reducedMotion = useReducedMotion();
-  const [visible, setVisible] = useState(true);
+  const [phase, setPhase] = useState<'visible' | 'leaving' | 'gone'>('visible');
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => setVisible(false), reducedMotion ? 120 : HOLD_MS);
-    return () => window.clearTimeout(timeout);
-  }, [reducedMotion]);
+    // Two frames: one to paint the mark, one to start fading it out.
+    const frame = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => setPhase('leaving'));
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    if (phase !== 'leaving') return;
+    const timer = window.setTimeout(() => setPhase('gone'), FADE_MS);
+    return () => window.clearTimeout(timer);
+  }, [phase]);
+
+  if (phase === 'gone') return null;
 
   return (
-    <AnimatePresence>
-      {visible ? (
-        <motion.div
-          key="preloader"
-          className="fixed inset-0 z-[100] grid place-items-center bg-base"
-          role="status"
-          aria-live="polite"
-          aria-label={`Loading ${siteConfig.name}`}
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="relative grid place-items-center">
-            {/* Glow behind the mark */}
-            <motion.div
-              aria-hidden="true"
-              className="pointer-events-none absolute h-52 w-52 rounded-full"
-              style={{
-                background:
-                  'radial-gradient(circle, rgba(0,200,255,0.30) 0%, rgba(0,106,245,0.16) 40%, transparent 70%)',
-              }}
-              initial={{ opacity: 0, scale: 0.7 }}
-              animate={{ opacity: reducedMotion ? 0.5 : [0.35, 0.9, 0.55], scale: 1 }}
-              transition={{ duration: 0.9, ease: 'easeOut' }}
-            />
+    <div
+      className={cn(
+        'nx-preloader pointer-events-none fixed inset-0 z-[100] grid place-items-center bg-base',
+        phase === 'leaving' && 'is-leaving',
+      )}
+      role="status"
+      aria-live="polite"
+      aria-label={`Loading ${siteConfig.name}`}
+    >
+      <div className="relative grid place-items-center">
+        <div
+          aria-hidden="true"
+          className="nx-motion-optional pointer-events-none absolute h-52 w-52 animate-glow-pulse rounded-full"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(0,200,255,0.30) 0%, rgba(0,106,245,0.16) 40%, transparent 70%)',
+          }}
+        />
 
-            <motion.img
-              src="/brand/nexverr-symbol.png"
-              alt=""
-              width={76}
-              height={76}
-              className="relative h-[4.75rem] w-[4.75rem]"
-              initial={{ opacity: 0, scale: 0.88 }}
-              animate={{ opacity: 1, scale: reducedMotion ? 1 : [0.88, 1.04, 1] }}
-              transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-            />
+        <img
+          src={brandAssets.symbol}
+          alt=""
+          width={76}
+          height={76}
+          className="relative h-[4.75rem] w-[4.75rem]"
+          fetchPriority="high"
+        />
 
-            {/* Progress hairline */}
-            <div className="mt-8 h-px w-32 overflow-hidden bg-white/10">
-              <motion.div
-                className="h-full w-full bg-brand-gradient"
-                initial={{ scaleX: 0, transformOrigin: 'left' }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: reducedMotion ? 0.1 : 0.75, ease: 'easeInOut' }}
-              />
-            </div>
+        <div aria-hidden="true" className="mt-8 h-px w-32 overflow-hidden bg-white/10">
+          <div className="nx-preloader-bar h-full w-full bg-brand-gradient" />
+        </div>
 
-            <p className="mt-5 text-[0.625rem] font-bold tracking-[0.4em] text-ink-faint">
-              {siteConfig.tagline}
-            </p>
-          </div>
-        </motion.div>
-      ) : null}
-    </AnimatePresence>
+        <p className="mt-5 text-[0.625rem] font-bold tracking-[0.4em] text-ink-faint">
+          {siteConfig.tagline}
+        </p>
+      </div>
+    </div>
   );
 }

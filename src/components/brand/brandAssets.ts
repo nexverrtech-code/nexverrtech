@@ -1,12 +1,15 @@
 /**
  * Brand asset paths — the single place the app refers to the logo.
  *
- * Every file below is generated from `brand/logo-master.png` by `npm run brand`.
- * Replace that master and re-run the script; nothing in the app changes.
+ * Every file below is generated from `brand/logo-master.png` by `npm run brand`
+ * (social cards come from `npm run og`). Replace that master, re-run the
+ * scripts, and nothing in the app changes.
  */
 export const brandAssets = {
-  /** Square, transparent, 512×512. Used everywhere in the UI. */
-  symbol: '/brand/nexverr-symbol.png',
+  /** 192×192. What the interface renders — never larger than 76 CSS pixels. */
+  symbol: '/brand/nexverr-mark.png',
+  /** 512×512. Used where a full-resolution mark is expected, e.g. schema. */
+  logo: '/brand/nexverr-symbol.png',
   favicon: '/brand/favicon.png',
   appleTouchIcon: '/brand/apple-touch-icon.png',
   ogImage: '/og/og-default.png',

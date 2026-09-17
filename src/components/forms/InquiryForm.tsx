@@ -1,30 +1,40 @@
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle2, Mail, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { FieldWrapper, SelectInput, TextArea, TextInput } from './FormField';
-import { inquirySchema, type InquiryFormValues } from './inquirySchema';
+import {
+  budgetOptions,
+  inquirySchema,
+  timelineOptions,
+  type InquiryFormValues,
+} from './inquirySchema';
 import { serviceOptions } from '@/data/services';
 import { contactConfig } from '@/lib/config';
 import { createWhatsAppInquiry } from '@/lib/whatsapp';
 import { createEmailInquiry } from '@/lib/email';
+import { track } from '@/lib/analytics';
 import type { InquiryChannel } from '@/lib/inquiry';
 
 interface InquiryFormProps {
   presetService?: string;
+  /** Where the form is rendered, for analytics. */
+  source?: string;
   /** Called after a successful hand-off, e.g. to close the modal. */
   onHandedOff?: (channel: InquiryChannel) => void;
 }
 
 /**
- * Six fields, two ways to send. There is no backend, so the UI says the inquiry
- * is *ready to send* — it never claims the company has received anything.
+ * Eight fields, two of them optional, and two ways to send. There is no
+ * backend, so the UI says the inquiry is *ready to send* — it never claims the
+ * company has received anything.
  */
-export function InquiryForm({ presetService, onHandedOff }: InquiryFormProps) {
+export function InquiryForm({ presetService, source = 'form', onHandedOff }: InquiryFormProps) {
   const fieldId = useId();
   const [handedOff, setHandedOff] = useState<InquiryChannel | null>(null);
   const [channelError, setChannelError] = useState<string | null>(null);
+  const startedRef = useRef(false);
 
   const {
     register,
@@ -39,9 +49,18 @@ export function InquiryForm({ presetService, onHandedOff }: InquiryFormProps) {
       email: '',
       phone: '',
       service: presetService && serviceOptions.includes(presetService) ? presetService : '',
+      budget: '',
+      timeline: '',
       message: '',
     },
   });
+
+  /** Fired once per mounted form, the first time someone actually engages. */
+  const handleFirstInteraction = () => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    track('form_start', { source, service: presetService });
+  };
 
   const send = (channel: InquiryChannel) =>
     handleSubmit((values) => {
@@ -55,6 +74,11 @@ export function InquiryForm({ presetService, onHandedOff }: InquiryFormProps) {
         return;
       }
 
+      track('form_submit', { channel, source, service: values.service });
+      track(channel === 'whatsapp' ? 'whatsapp_click' : 'email_click', {
+        source: `${source}-form`,
+      });
+
       setHandedOff(channel);
       onHandedOff?.(channel);
     });
@@ -63,7 +87,12 @@ export function InquiryForm({ presetService, onHandedOff }: InquiryFormProps) {
 
   return (
     // Enter anywhere in the form submits through WhatsApp, the primary channel.
-    <form noValidate className="flex flex-col gap-5" onSubmit={send('whatsapp')}>
+    <form
+      noValidate
+      className="flex flex-col gap-5"
+      onSubmit={send('whatsapp')}
+      onFocusCapture={handleFirstInteraction}
+    >
       <div className="grid gap-5 sm:grid-cols-2">
         <FieldWrapper id={id('name')} label="Name" required error={errors.name?.message}>
           <TextInput
@@ -77,7 +106,11 @@ export function InquiryForm({ presetService, onHandedOff }: InquiryFormProps) {
           />
         </FieldWrapper>
 
-        <FieldWrapper id={id('company')} label="Company" error={errors.company?.message}>
+        <FieldWrapper
+          id={id('company')}
+          label="Company / Business"
+          error={errors.company?.message}
+        >
           <TextInput
             id={id('company')}
             autoComplete="organization"
@@ -140,6 +173,30 @@ export function InquiryForm({ presetService, onHandedOff }: InquiryFormProps) {
         </SelectInput>
       </FieldWrapper>
 
+      <div className="grid gap-5 sm:grid-cols-2">
+        <FieldWrapper id={id('budget')} label="Budget" error={errors.budget?.message}>
+          <SelectInput id={id('budget')} {...register('budget')}>
+            <option value="">Prefer not to say</option>
+            {budgetOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </SelectInput>
+        </FieldWrapper>
+
+        <FieldWrapper id={id('timeline')} label="Timeline" error={errors.timeline?.message}>
+          <SelectInput id={id('timeline')} {...register('timeline')}>
+            <option value="">Not decided yet</option>
+            {timelineOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </SelectInput>
+        </FieldWrapper>
+      </div>
+
       <FieldWrapper
         id={id('message')}
         label="Project Requirement"
@@ -153,15 +210,16 @@ export function InquiryForm({ presetService, onHandedOff }: InquiryFormProps) {
           placeholder="Tell us about the business problem, what exists today, and what you'd like it to do."
           hasError={Boolean(errors.message)}
           aria-invalid={Boolean(errors.message)}
-          aria-describedby={
-            errors.message ? `${id('message')}-error` : `${id('message')}-hint`
-          }
+          aria-describedby={errors.message ? `${id('message')}-error` : `${id('message')}-hint`}
           {...register('message')}
         />
       </FieldWrapper>
 
       {channelError ? (
-        <p role="alert" className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200">
+        <p
+          role="alert"
+          className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200"
+        >
           {channelError}
         </p>
       ) : null}

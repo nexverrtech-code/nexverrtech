@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { PageHero } from '@/components/sections/PageHero';
 import { StartYourProject } from '@/components/sections/StartYourProject';
@@ -10,9 +11,21 @@ import { solutionGroups } from '@/data/solutions';
 import { getServicesByGroup } from '@/data/services';
 import { useSeo } from '@/hooks/useSeo';
 import { routeSeo } from '@/lib/routeSeo';
+import { itemListJsonLd } from '@/lib/seo';
 
 export default function Solutions() {
-  useSeo(routeSeo.solutions);
+  const seo = useMemo(
+    () => ({
+      ...routeSeo.solutions,
+      schema: [
+        ...routeSeo.solutions.schema,
+        itemListJsonLd('Industries NEXVERR TECHNOLOGIES builds for', industries.map((industry) => ({ name: industry.name, path: `/solutions/${industry.slug}` }))),
+      ],
+    }),
+    [],
+  );
+
+  useSeo(seo);
 
   return (
     <>
@@ -20,26 +33,51 @@ export default function Solutions() {
         eyebrow="Solutions"
         title="Solutions Built Around Your Business"
         description="Every industry has its own rhythm — what gets counted, who approves what, and where the day actually gets stuck. We design around that, then build."
+        breadcrumbs={routeSeo.solutions.breadcrumbs}
+        tone="violet"
       />
 
-      <section className="nx-section-tight" aria-labelledby="industries-heading">
+      <section className="nx-section-tight pt-0" aria-labelledby="industries-heading">
         <Container>
-          <h2 id="industries-heading" className="text-sub">
-            Industries we build for
-          </h2>
+          <Reveal>
+            <h2 id="industries-heading" className="text-sub">
+              Industries we build for
+            </h2>
+          </Reveal>
 
           <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {industries.map((industry, index) => (
-              <Reveal as="li" key={industry.slug} delay={Math.min(index, 6) * 0.05}>
-                <div className="nx-card h-full p-6">
-                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand-gradient-soft text-brand-cyan ring-1 ring-inset ring-white/10">
-                    <Icon name={industry.icon} className="h-[1.125rem] w-[1.125rem]" />
-                  </span>
-                  <h3 className="mt-5 text-[1.0625rem] font-extrabold tracking-tight">
-                    {industry.name}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-muted">{industry.focus}</p>
-                </div>
+              <Reveal as="li" key={industry.slug} delay={Math.min(index, 6) * 0.04}>
+                <article className="nx-card group h-full">
+                  <Link
+                    to={`/solutions/${industry.slug}`}
+                    className="flex h-full flex-col p-6"
+                    aria-label={`${industry.name} solutions`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand-gradient-soft text-brand-cyan ring-1 ring-inset ring-white/10">
+                        <Icon name={industry.icon} className="h-[1.125rem] w-[1.125rem]" />
+                      </span>
+                      <ArrowUpRight
+                        className="h-4 w-4 shrink-0 text-ink-faint transition-colors duration-300 group-hover:text-brand-cyan"
+                        aria-hidden="true"
+                      />
+                    </div>
+
+                    <h3 className="mt-5 text-[1.0625rem] font-extrabold tracking-tight">
+                      {industry.name}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-ink-muted">{industry.focus}</p>
+
+                    <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-bold text-brand-cyan">
+                      View solutions
+                      <ArrowRight
+                        className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </Link>
+                </article>
               </Reveal>
             ))}
           </ul>
@@ -53,9 +91,11 @@ export default function Solutions() {
 
       <section className="nx-section-tight" aria-labelledby="capability-heading">
         <Container>
-          <h2 id="capability-heading" className="text-sub">
-            What we bring to each of them
-          </h2>
+          <Reveal>
+            <h2 id="capability-heading" className="text-sub">
+              What we bring to each of them
+            </h2>
+          </Reveal>
 
           <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {solutionGroups.map((group, index) => (
@@ -84,7 +124,7 @@ export default function Solutions() {
         </Container>
       </section>
 
-      <StartYourProject />
+      <StartYourProject source="solutions" />
     </>
   );
 }

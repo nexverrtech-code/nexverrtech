@@ -9,6 +9,7 @@ import { services } from '@/data/services';
 import { solutionGroups, type SolutionGroupId } from '@/data/solutions';
 import { useSeo } from '@/hooks/useSeo';
 import { routeSeo } from '@/lib/routeSeo';
+import { itemListJsonLd } from '@/lib/seo';
 import { cn } from '@/lib/utils';
 
 const ALL = 'all';
@@ -18,7 +19,18 @@ export default function Services() {
   const [searchParams, setSearchParams] = useSearchParams();
   const active = searchParams.get('group') ?? ALL;
 
-  useSeo(routeSeo.services);
+  const seo = useMemo(
+    () => ({
+      ...routeSeo.services,
+      schema: [
+        ...routeSeo.services.schema,
+        itemListJsonLd('NEXVERR TECHNOLOGIES services', services.map((service) => ({ name: service.title, path: `/services/${service.slug}` }))),
+      ],
+    }),
+    [],
+  );
+
+  useSeo(seo);
 
   const filtered = useMemo(
     () => (active === ALL ? services : services.filter((service) => service.group === active)),
@@ -40,6 +52,8 @@ export default function Services() {
         eyebrow="Services"
         title="Everything we build, in one place"
         description="Twenty services across six areas of work. If you are not sure which one fits, describe the problem and we will point you at the right starting place."
+        breadcrumbs={routeSeo.services.breadcrumbs}
+        tone="cyan"
       />
 
       <section className="pb-4" aria-label="Service catalog">
@@ -86,7 +100,7 @@ export default function Services() {
         </Container>
       </section>
 
-      <StartYourProject />
+      <StartYourProject source="services" />
     </>
   );
 }

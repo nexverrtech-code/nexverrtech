@@ -1,3 +1,5 @@
+import { brandAssets } from '@/components/brand/brandAssets';
+
 /** Shown while a lazily-loaded route chunk arrives. Deliberately quiet. */
 export function RouteFallback() {
   return (
@@ -9,7 +11,7 @@ export function RouteFallback() {
     >
       <div className="flex flex-col items-center gap-5">
         <img
-          src="/brand/nexverr-symbol.png"
+          src={brandAssets.symbol}
           alt=""
           width={40}
           height={40}

@@ -20,6 +20,7 @@ export default function About() {
         eyebrow="About"
         title="A technology partner, not a vendor"
         description={`${siteConfig.name} is based in ${headquarters.city}, ${headquarters.state}. We work on business digitalization and custom software — understanding how a business runs, then building the systems that make it run better.`}
+        breadcrumbs={routeSeo.about.breadcrumbs}
       />
 
       <section className="nx-section-tight" aria-labelledby="who-we-are-heading">
@@ -95,7 +96,7 @@ export default function About() {
         </Container>
       </section>
 
-      <StartYourProject />
+      <StartYourProject source="about" />
     </>
   );
 }

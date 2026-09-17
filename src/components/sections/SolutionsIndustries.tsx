@@ -20,7 +20,7 @@ export function SolutionsIndustries() {
         <SectionHeading
           eyebrow="Solutions"
           title={<span id="industries-heading">Solutions Built Around Your Business</span>}
-          description="From retail and education to healthcare, hospitality and manufacturing, we build solutions around the way your business works."
+          description="From retail and restaurants to education, healthcare and manufacturing, we build solutions around the way your business already works."
           action={
             <ButtonLink to="/solutions" variant="secondary">
               Explore Solutions

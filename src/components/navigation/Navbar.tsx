@@ -1,20 +1,35 @@
-import { useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { NavLink as RouterNavLink } from 'react-router-dom';
 import { ArrowRight, Menu } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Logo } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/Button';
 import { useScrolled } from '@/hooks/useScrolled';
+import { track } from '@/lib/analytics';
 import { useInquiry } from '@/context/InquiryContext';
 import { primaryNav } from '@/data/navigation';
 import { cn } from '@/lib/utils';
-import { MobileMenu } from './MobileMenu';
+
+/**
+ * The drawer only exists on small screens, and only after someone opens it, so
+ * its markup and animation are fetched at that point rather than shipped to
+ * every visitor on every page.
+ */
+const MobileMenu = lazy(() =>
+  import('./MobileMenu').then((module) => ({ default: module.MobileMenu })),
+);
 
 /** Sticky, transparent at the top, glass once the page moves. */
 export function Navbar() {
   const scrolled = useScrolled(24);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [everOpened, setEverOpened] = useState(false);
   const { openInquiry } = useInquiry();
+
+  // Kept mounted after the first open so closing keeps its exit transition.
+  useEffect(() => {
+    if (menuOpen) setEverOpened(true);
+  }, [menuOpen]);
 
   return (
     <>
@@ -46,7 +61,7 @@ export function Navbar() {
                     end={link.to === '/'}
                     className={({ isActive }) =>
                       cn(
-                        'relative inline-flex h-10 items-center rounded-full px-4 text-sm font-bold transition-colors duration-300',
+                        'relative inline-flex h-10 items-center rounded-full px-3.5 text-sm font-bold transition-colors duration-300',
                         isActive ? 'text-ink' : 'text-ink-muted hover:text-ink',
                       )
                     }
@@ -57,7 +72,7 @@ export function Navbar() {
                         {isActive ? (
                           <span
                             aria-hidden="true"
-                            className="absolute inset-x-4 bottom-1.5 h-px bg-brand-gradient"
+                            className="absolute inset-x-3.5 bottom-1.5 h-px bg-brand-gradient"
                           />
                         ) : null}
                       </>
@@ -69,8 +84,15 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Button size="sm" onClick={() => openInquiry()} className="hidden sm:inline-flex">
-              Let&rsquo;s Talk
+            <Button
+              size="sm"
+              onClick={() => {
+                track('start_project_click', { source: 'navbar' });
+                openInquiry();
+              }}
+              className="hidden sm:inline-flex"
+            >
+              Start a Project
               <ArrowRight
                 className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
                 aria-hidden="true"
@@ -92,7 +114,11 @@ export function Navbar() {
         </Container>
       </header>
 
-      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+      {everOpened ? (
+        <Suspense fallback={null}>
+          <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+        </Suspense>
+      ) : null}
     </>
   );
 }

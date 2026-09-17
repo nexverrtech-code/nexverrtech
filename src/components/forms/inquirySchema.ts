@@ -20,6 +20,8 @@ export const inquirySchema = z.object({
     .max(20, 'That number looks too long.')
     .regex(/^[+\d][\d\s\-()]*$/, 'Use digits, spaces or +country code only.'),
   service: z.string().trim().min(1, 'Pick the closest service — we can refine it together.'),
+  budget: z.string().trim().optional(),
+  timeline: z.string().trim().optional(),
   message: z
     .string()
     .trim()
@@ -28,3 +30,20 @@ export const inquirySchema = z.object({
 });
 
 export type InquiryFormValues = z.infer<typeof inquirySchema>;
+
+/** Optional qualifiers. Kept short so the form still reads as a quick ask. */
+export const budgetOptions = [
+  'Not sure yet',
+  'Under ₹50,000',
+  '₹50,000 – ₹2,00,000',
+  '₹2,00,000 – ₹5,00,000',
+  'Above ₹5,00,000',
+];
+
+export const timelineOptions = [
+  'As soon as possible',
+  'Within a month',
+  '1–3 months',
+  '3+ months',
+  'Just exploring',
+];

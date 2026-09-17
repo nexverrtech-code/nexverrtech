@@ -9,6 +9,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useInquiry } from '@/context/InquiryContext';
 import { mobileNav } from '@/data/navigation';
 import { siteConfig } from '@/lib/config';
+import { track } from '@/lib/analytics';
 import { cn } from '@/lib/utils';
 
 interface MobileMenuProps {
@@ -100,11 +101,12 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
               fullWidth
               size="lg"
               onClick={() => {
+                track('start_project_click', { source: 'mobile-menu' });
                 onClose();
                 openInquiry();
               }}
             >
-              Let&rsquo;s Talk
+              Start a Project
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Button>
             <p className="mt-4 text-center text-xs font-semibold tracking-[0.2em] text-ink-faint">

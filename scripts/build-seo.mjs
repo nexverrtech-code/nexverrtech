@@ -8,11 +8,14 @@
  * history.
  *
  * So after `vite build` this writes one real HTML file per route, with that
- * route's own `<title>`, description and canonical already in the markup, plus
- * a `sitemap.xml` and `robots.txt` generated from the same data. That last part
- * matters: the sitemap used to be hand-maintained, and had drifted onto a
- * domain the site does not own. Now it cannot — every URL here comes from
- * `siteConfig.url`, the same value the canonical tags use.
+ * route's own `<title>`, description, canonical, social card and JSON-LD
+ * already in the markup, plus `sitemap.xml`, `robots.txt` and a `404.html` the
+ * host can serve with a real 404 status. Every URL comes from `siteConfig.url`,
+ * the same value the canonical tags use, so the sitemap cannot drift onto a
+ * domain the site does not own.
+ *
+ * The injected tags carry `data-nx-seo`, the same marker `src/lib/seo.ts` uses
+ * at runtime, so React replaces them on navigation instead of duplicating them.
  *
  * Route metadata lives in `src/lib/routeSeo.ts`. Add a route there, not here.
  */
@@ -42,7 +45,8 @@ function xml(value) {
 }
 
 function absoluteUrl(origin, path) {
-  return `${origin}${path === '/' ? '/' : path}`;
+  if (path === '/') return `${origin}/`;
+  return `${origin}${path.replace(/\/+$/, '')}`;
 }
 
 /**
@@ -50,30 +54,52 @@ function absoluteUrl(origin, path) {
  * same four-space indent the surrounding `<head>` uses, so the generated file
  * stays readable when someone views source.
  */
-function headBlock({ title, description, url, image, noIndex }) {
+function headBlock({ title, description, url, image, noIndex, type, publishedTime, modifiedTime, schema }) {
   const t = attr(title);
   const d = attr(description);
   const u = attr(url);
   const i = attr(image);
+  const ogType = type === 'article' ? 'article' : 'website';
 
-  return [
+  const tags = [
     SEO_START,
     `<title>${t}</title>`,
     `<meta name="description" content="${d}" />`,
-    `<meta name="robots" content="${noIndex ? 'noindex, nofollow' : 'index, follow'}" />`,
+    `<meta name="robots" content="${
+      noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'
+    }" />`,
     `<link rel="canonical" href="${u}" />`,
     `<meta property="og:site_name" content="NEXVERR TECHNOLOGIES" />`,
-    `<meta property="og:type" content="website" />`,
+    `<meta property="og:locale" content="en_IN" />`,
+    `<meta property="og:type" content="${ogType}" />`,
     `<meta property="og:title" content="${t}" />`,
     `<meta property="og:description" content="${d}" />`,
     `<meta property="og:url" content="${u}" />`,
     `<meta property="og:image" content="${i}" />`,
+    `<meta property="og:image:alt" content="${t} — NEXVERR TECHNOLOGIES" />`,
+  ];
+
+  if (ogType === 'article' && publishedTime) {
+    tags.push(`<meta property="article:published_time" content="${attr(publishedTime)}" />`);
+    tags.push(
+      `<meta property="article:modified_time" content="${attr(modifiedTime ?? publishedTime)}" />`,
+    );
+  }
+
+  tags.push(
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${t}" />`,
     `<meta name="twitter:description" content="${d}" />`,
     `<meta name="twitter:image" content="${i}" />`,
-    SEO_END,
-  ].join('\n    ');
+  );
+
+  for (const block of schema ?? []) {
+    const json = JSON.stringify(block).replace(/</g, '\\u003c');
+    tags.push(`<script type="application/ld+json" data-nx-seo>${json}</script>`);
+  }
+
+  tags.push(SEO_END);
+  return tags.join('\n    ');
 }
 
 /** Load the app's own TypeScript config + route data, path aliases and all. */
@@ -84,21 +110,26 @@ async function loadAppModules() {
     logLevel: 'warn',
     appType: 'custom',
     server: { middlewareMode: true },
+    // Nothing is served from this instance — it exists only to evaluate the
+    // app's TypeScript modules. Skipping dependency discovery avoids a scan
+    // that would still be running when the server closes.
+    optimizeDeps: { noDiscovery: true, include: [] },
   });
 
   try {
-    const [{ siteConfig }, { indexableRoutes }] = await Promise.all([
+    const [{ siteConfig }, { notFoundSeo }, { indexableRoutes }] = await Promise.all([
       server.ssrLoadModule('/src/lib/config.ts'),
       server.ssrLoadModule('/src/lib/routeSeo.ts'),
+      server.ssrLoadModule('/src/lib/siteRoutes.ts'),
     ]);
-    return { siteConfig, routes: indexableRoutes() };
+    return { siteConfig, routes: indexableRoutes(), notFound: notFoundSeo };
   } finally {
     await server.close();
   }
 }
 
 async function main() {
-  const { siteConfig, routes } = await loadAppModules();
+  const { siteConfig, routes, notFound } = await loadAppModules();
   const origin = siteConfig.url;
 
   // A wrong origin here is the exact failure that kept this site out of Google.
@@ -123,25 +154,59 @@ async function main() {
 
   const before = template.slice(0, start);
   const after = template.slice(end + SEO_END.length);
-  const image = `${origin}${siteConfig.ogImage}`;
+
+  const render = (route) => {
+    const url = absoluteUrl(origin, route.path);
+    const image = `${origin}${route.image ?? siteConfig.ogImage}`;
+    return before + headBlock({ ...route, url, image }) + after;
+  };
+
+  const seen = new Map();
 
   for (const route of routes) {
-    const url = absoluteUrl(origin, route.path);
-    const html = before + headBlock({ ...route, url, image }) + after;
+    if (seen.has(route.path)) {
+      throw new Error(`Two routes share the path ${route.path}. Check routeSeo.ts.`);
+    }
+    seen.set(route.path, route);
 
     const target =
       route.path === '/' ? join(dist, 'index.html') : join(dist, route.path, 'index.html');
 
     await mkdir(dirname(target), { recursive: true });
-    await writeFile(target, html, 'utf8');
+    await writeFile(target, render(route), 'utf8');
   }
 
+  // Duplicate titles and descriptions are the most common self-inflicted SEO
+  // problem on a site like this, so the build refuses to ship them.
+  for (const field of ['title', 'description']) {
+    const byValue = new Map();
+    for (const route of routes) {
+      const value = route[field];
+      byValue.set(value, [...(byValue.get(value) ?? []), route.path]);
+    }
+    const clashes = [...byValue.entries()].filter(([, paths]) => paths.length > 1);
+    if (clashes.length > 0) {
+      throw new Error(
+        `Duplicate ${field} across routes:\n` +
+          clashes.map(([value, paths]) => `  "${value}"\n    ${paths.join('\n    ')}`).join('\n'),
+      );
+    }
+  }
+
+  // The host serves this for any URL that does not exist, with a real 404
+  // status. Without it an unknown URL would be answered by the homepage at 200,
+  // which search engines treat as a soft 404.
+  await writeFile(join(dist, '404.html'), render(notFound), 'utf8');
+
   const urls = routes
-    .map(
-      (route) =>
+    .filter((route) => !route.noIndex)
+    .map((route) => {
+      const lastmod = route.lastmod ? `<lastmod>${xml(route.lastmod)}</lastmod>` : '';
+      return (
         `  <url><loc>${xml(absoluteUrl(origin, route.path))}</loc>` +
-        `<priority>${route.priority.toFixed(1)}</priority></url>`,
-    )
+        `${lastmod}<priority>${route.priority.toFixed(1)}</priority></url>`
+      );
+    })
     .join('\n');
 
   await writeFile(
@@ -151,14 +216,23 @@ async function main() {
     'utf8',
   );
 
+  // Everything public is crawlable, including the CSS and JS needed to render
+  // it. Only the error page is kept out of the index.
   await writeFile(
     join(dist, 'robots.txt'),
-    `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`,
+    [
+      'User-agent: *',
+      'Allow: /',
+      'Disallow: /404',
+      '',
+      `Sitemap: ${origin}/sitemap.xml`,
+      '',
+    ].join('\n'),
     'utf8',
   );
 
   console.log(
-    `SEO: ${routes.length} prerendered pages, sitemap.xml and robots.txt written for ${origin}`,
+    `SEO: ${routes.length} prerendered pages + 404.html, sitemap.xml and robots.txt written for ${origin}`,
   );
 }
 
